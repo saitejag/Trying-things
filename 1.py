@@ -1,5 +1,10 @@
-import smtplib
-server = smtplib.SMTP('smtp.gmail.com',587)
-server.login("saitejag1502@gmail.com","")
-msg = "Hello!"
-server.sendmail("saitejag1502@gmail.com","lelouch1729@gmail.com",msg)
+import winsound
+from random import randint
+t = 0;
+while(t<10000):
+    k = randint(2000,3000);
+    l = randint(100,500);
+    winsound.Beep(k,l);
+    #print(k);
+    t = t + l;
+

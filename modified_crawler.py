@@ -10,9 +10,8 @@ class LinkParser(HTMLParser):
             for (key, value) in attrs:
                 if key == 'href':
                     newUrl = parse.urljoin(self.baseUrl, value)
-                    self.links = self.links + [newUrl]
                     if newUrl != self.baseUrl:
-                        parentlink[newUrl] = self.baseUrl
+                        self.links = self.links + [newUrl]
 
     def getLinks(self, url):
         self.links = []
@@ -29,7 +28,7 @@ class LinkParser(HTMLParser):
 
 def spider(url, word, maxPages):  
     pagesToVisit = [url]
-    alllinks = [url]
+    alllinks = []
     parentlink[url] = -1
     numberVisited = 0
     foundWord = False
@@ -41,25 +40,27 @@ def spider(url, word, maxPages):
             # print(numberVisited, "Visiting:", url)
             parser = LinkParser()
             data, links = parser.getLinks(url)
+            alllinks = alllinks+[url]
+            links = list(set(links) - set(alllinks))
             pagesToVisit = pagesToVisit + links
-            alllinks = alllinks + links
+            for x in links:
+                parentlink[x] = url
             if data.find(word)>-1:
                 foundWord = True
                 print(" **Success!**")
-        except:
-            print(" **Failed!**")
+        except Exception as e :
+            print(" **Failed!**",e)
     if foundWord:
         print("The word", word, "was found at", url)
         print("The Path taken is")
-        # print(parentlink)
-        # while parentlink[url]!=-1:
-        #     print(parentlink[url])
-        #     print("->")
-        #     url = parentlink[url]
+        while parentlink[url]!=-1:
+            print(parentlink[url],"<-")
+            url = parentlink[url]
+        # print(data)
     else:
         # print(parentlink)
         print("Word never found")
 
 s = input("Search for?\n")
-# s = r'\b' + s + r'\b'
+# s = " " + s + " "
 spider("https://en.wikipedia.org/wiki/Main_Page",s,10000)        
